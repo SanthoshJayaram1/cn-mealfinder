@@ -7,23 +7,23 @@ document.addEventListener('load', ()=>{
 // Get the toggle button, sidebar, flex box, and search bar elements from the DOM
  const toggleButton = document.getElementById("toggle-sidebar");
  const sidebar = document.getElementById("sidebar");
- const listBox = document.getElementById('flex-box');
+ const flexBox = document.getElementById('flex-box');
  const searchbar = document.getElementById('search-bar');
 
  
 // Define the key for the favorite list in the localStorage
- const favList = "favoritesList";
+ const dbObjectFavList = "favoritesList";
 
  // If the favorite list doesn't exist in the localStorage, initialize it as an empty array
- if (localStorage.getItem(favList) == null) {
-    localStorage.setItem(favList, JSON.stringify([]));
+ if (localStorage.getItem(dbObjectFavList) == null) {
+    localStorage.setItem(dbObjectFavList, JSON.stringify([]));
 }
 
 
 // Update the task counter with the number of items in the favorite list
 function updateTask() {
     const favCounter = document.getElementById('total-counter');
-    const db = JSON.parse(localStorage.getItem(favList));
+    const db = JSON.parse(localStorage.getItem(dbObjectFavList));
     if (favCounter.innerText != null) {
         favCounter.innerText = db.length;
     }
@@ -54,19 +54,16 @@ function truncate(str, n) {
     return possible.charAt(Math.floor(Math.random() * possible.length));
 }
 
-
 // Attach an event listener to the toggle button click event
 toggleButton.addEventListener("click", function () {
     showFavMealList();
     sidebar.classList.toggle("show");
-    listBox.classList.toggle('shrink');
+    flexBox.classList.toggle('shrink');
 });
 
-
 // Handle the scroll event on the flex box
-listBox.onscroll = function () {
-
-    if (listBox.scrollTop > searchbar.offsetTop) {
+flexBox.onscroll = function () {
+    if (flexBox.scrollTop > searchbar.offsetTop) {
         searchbar.classList.add("fixed");
 
     } else {
@@ -82,10 +79,9 @@ const fetchMealsFromApi = async (url, value) => {
     return meals;
 }
 
-
 // Display a list of meals based on the search input value
 async function showMealList() {
-    const list = JSON.parse(localStorage.getItem(favList));
+    const list = JSON.parse(localStorage.getItem(dbObjectFavList));
     const inputValue = document.getElementById("search-input").value;
     const url = "https://www.themealdb.com/api/json/v1/1/search.php?s=";
     const mealsData = await fetchMealsFromApi(url, inputValue);
@@ -93,7 +89,7 @@ async function showMealList() {
     if (mealsData.meals) {
         html = mealsData.meals.map(element => {
             return `
-        <div class="card">
+            <div class="card">
             <div class="card-top"  onclick="showMealDetails(${element.idMeal}, '${inputValue}')">
                 <div class="dish-photo" >
                     <img src="${element.strMealThumb}" alt="">
@@ -103,7 +99,7 @@ async function showMealList() {
                 </div>
                 <div class="dish-details">
                     ${truncate(element.strInstructions, 50)}                
-                    <span class="button" onclick="showMealDetails(${element.idMeal}, '${inputValue}')">Read More</span>               
+                    <span class="button" onclick="showMealDetails(${element.idMeal}, '${inputValue}')">Read More</span>                
                 </div>
             </div>
             <div class="card-bottom">
@@ -122,11 +118,10 @@ async function showMealList() {
     }
 }
 
-
 // Add or remove a meal from the favorite list
 function addRemoveToFavList(id) {
     const detailsPageLikeBtn = document.getElementById('like-button');
-    let db = JSON.parse(localStorage.getItem(favList));
+    let db = JSON.parse(localStorage.getItem(dbObjectFavList));
     let ifExist = false;
     for (let i = 0; i < db.length; i++) {
         if (id == db[i]) {
@@ -137,7 +132,7 @@ function addRemoveToFavList(id) {
     } else {
         db.push(id);
     }
-    localStorage.setItem(favList, JSON.stringify(db));
+    localStorage.setItem(dbObjectFavList, JSON.stringify(db));
     if (detailsPageLikeBtn != null) {
         detailsPageLikeBtn.innerHTML = isFav(db, id) ? 'Remove From Favorite' : 'Add To Favorite';
     }
@@ -146,10 +141,9 @@ function addRemoveToFavList(id) {
     updateTask();
 }
 
- /* Display the details of a meal*/
 async function showMealDetails(itemId, searchInput) {
-    const list = JSON.parse(localStorage.getItem(favList));
-    listBox.scrollTo({ top: 0, behavior: "smooth" });
+    const list = JSON.parse(localStorage.getItem(dbObjectFavList));
+    flexBox.scrollTo({ top: 0, behavior: "smooth" });
     const url = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=";
     const searchUrl = "https://www.themealdb.com/api/json/v1/1/search.php?s=";
     const mealList = await fetchMealsFromApi(searchUrl,searchInput);
@@ -257,7 +251,7 @@ async function showMealDetails(itemId, searchInput) {
 }
 
 async function showFavMealList() {
-    let favList = JSON.parse(localStorage.getItem(favList));
+    let favList = JSON.parse(localStorage.getItem(dbObjectFavList));
     let url = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=";
     let html = "";
 
