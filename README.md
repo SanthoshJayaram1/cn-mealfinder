@@ -32,8 +32,3 @@ This is a web application that allows users to search for and explore various me
 
 ## Contributing
 Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request. Make sure to follow the existing code style and guidelines.
-
-## License
-This project is licensed under the MIT License.
-
-    Feel free to modify the content based on your project's specifics and add any additional sections or information as needed.
